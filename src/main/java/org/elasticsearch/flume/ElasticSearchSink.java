@@ -1,16 +1,19 @@
-package org.elasticsearch.flume.elasticflume;
+package org.elasticsearch.flume;
 
 import com.cloudera.flume.conf.Context;
-import com.cloudera.flume.conf.SinkFactory;
+import com.cloudera.flume.conf.SinkFactory.SinkBuilder;
 import com.cloudera.flume.core.Event;
 import com.cloudera.flume.core.EventSink;
+import com.cloudera.util.Pair;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.node.Node;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import static org.elasticsearch.common.xcontent.XContentFactory.jsonBuilder;
 import static org.elasticsearch.node.NodeBuilder.nodeBuilder;
@@ -58,9 +61,9 @@ public class ElasticSearchSink extends EventSink.Base {
     }
 
 
-    public static SinkFactory.SinkBuilder builder() {
+    public static SinkBuilder builder() {
 
-        return new SinkFactory.SinkBuilder() {
+        return new SinkBuilder() {
             @Override
             public EventSink build(Context context, String... argv) {
                 // TODO fill in cluster details etc. 
@@ -68,6 +71,17 @@ public class ElasticSearchSink extends EventSink.Base {
 
             }
         };
+    }
+
+    /**
+     * This is a special function used by the SourceFactory to pull in this class
+     * as a plugin sink.
+     */
+    public static List<Pair<String, SinkBuilder>> getSinkBuilders() {
+        List<Pair<String, SinkBuilder>> builders =
+                new ArrayList<Pair<String, SinkBuilder>>();
+        builders.add(new Pair<String, SinkBuilder>("elasticSearchSink", builder()));
+        return builders;
     }
 
 }
