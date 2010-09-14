@@ -15,10 +15,12 @@ Pre-Conditions:
 Getting Started with elasticflume
 
 0. First, setup some environment variables to your local paths, to make the following steps simpler:
-    export FLUME_HOME=<path to where you have Flume checkedout/installed
+    export FLUME_HOME=<path to where you have Flume checkedout/installed>
     export ELASTICSEARCH_HOME=<path to where you have ElasticSearch checked out>
-    export ELASTICFLUME_HOME=path to where you have elasticflume checked out (Be careful with these last 2 env vars
-        because they are deceivingly similar)
+
+    export ELASTICFLUME_HOME=path to where you have elasticflume checked out>
+
+            (Be careful with these last 2 env vars because they are deceivingly similar)
 
 1. Build it using Maven:
 
@@ -36,9 +38,37 @@ Getting Started with elasticflume
 
     ln -s $ELASTICFLUME_HOME/target/elasticflume-1.0.0-SNAPSHOT-jar-with-dependencies.jar $FLUME_HOME/lib/
 
+3. Ensure your Flume config is correct, check the $FLUME_HOME/conf/flume-conf.xml correctly identifies your local master, you
+    may have to copy the template file that's in that directory to be 'flume-conf.xml' and then add the following:
+
+  <property>
+    <name>flume.master.servers</name>
+    <value>localhost</value>
+    <description>A comma-separated list of hostnames, one for each
+      machine in the Flume Master.
+    </description>
+  </property>
+
+  ... (the above may not be necessary, because it's the default, but I had to do it for some reason).
+
+  You will also need to register the elasticflume plugin via creating a new a property block:
+
+  <property>
+      <name>flume.plugin.classes</name>
+      <value>org.elasticsearch.flume.ElasticSearchSink</value>
+      <description>Comma separated list of plugins</description>
+  </property>
+
+
 4. Startup Flume Master, and Flume nodes, you will need 2 different shells here.
     cd $FLUME_HOME
     bin/flume master
+
+        VERIFY that you see in the startup log for the master the following log line, if you don't see this, you've missed at least Step 3:
+
+        2010-09-14 14:20:53,861 [main] INFO conf.SinkFactoryImpl: Found sink builder elasticSearchSink in org.elasticsearch.flume.ElasticSearchSink
+
+
     bin/flume node_nowatch
 
 
