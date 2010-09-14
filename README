@@ -29,14 +29,14 @@ Getting Started with elasticflume
 
 
     1.2 Build elasticflume
-
+    cd $ELASTICFLUME_HOME
     mvn package
 
-2. Now add the elasticflume jar into the classpath too:
+2. Now add the elasticflume jar into the classpath too, I do this personally with a symlink for testing, but copying is probably a better idea.. :):
 
     ln -s $ELASTICFLUME_HOME/target/elasticflume-1.0.0-SNAPSHOT-jar-with-dependencies.jar $FLUME_HOME/lib/
 
-4. Startup Flume Master, and Flume nodes.
+4. Startup Flume Master, and Flume nodes, you will need 2 different shells here.
     cd $FLUME_HOME
     bin/flume master
     bin/flume node -n elasticflumenode
