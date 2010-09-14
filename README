@@ -25,7 +25,7 @@ Getting Started with elasticflume
     1.1 Install the Flume library into your local Maven repo (because it's not available in central)
         Note: the below assumes you have done a 'git clone' of the Flume source, and have built it.
 
-        mvn install:install-file -DgroupId=com.cloudera -DartifactId=flume -Dversion=$FLUME_HOME/build/0.9.1-dev -Dclassifier=core -Dfile=flume-0.9.1-dev-core.jar -Dpackaging=jar
+        mvn install:install-file -DgroupId=com.cloudera -DartifactId=flume -Dversion=0.9.1-dev -Dclassifier=core -Dfile=$FLUME_HOME/build/flume-0.9.1-dev-core.jar -Dpackaging=jar
 
 
     1.2 Build elasticflume
