@@ -2,26 +2,47 @@
 
 Using ElasticSearch Flume integration
 
+Pre-Conditions:
+* have Flume installed, or at least cloned from the Flume git repo,
+    if not, go here http://github.com/cloudera/flume , and build it (currently using 'ant', but follow their docs).
+
+    From here on, this Flume directory will be referred to as FLUME_HOME
+
+* Have ElasticSearch installed locally, we'll assume that from a Getting Started point of view you have a local
+  ElasticSearch server running locally, if not go here http://github.com/elasticsearch/elasticsearch
+
+
+Getting Started with elasticflume
+
+0. First, setup some environment variables to your local paths, to make the following steps simpler:
+    export FLUME_HOME=<path to where you have Flume checkedout/installed
+    export ELASTICSEARCH_HOME=<path to where you have ElasticSearch checked out>
+    export ELASTICFLUME_HOME=path to where you have elasticflume checked out (Be careful with these last 2 env vars
+        because they are deceivingly similar)
+
 1. Build it using Maven:
 
     1.1 Install the Flume library into your local Maven repo (because it's not available in central)
-        mvn install:install-file -DgroupId=com.cloudera -DartifactId=flume -Dversion=0.9.1-dev -Dclassifier=core -Dfile=flume-0.9.1-dev-core.jar -Dpackaging=jar
+        Note: the below assumes you have done a 'git clone' of the Flume source, and have built it.
+
+        mvn install:install-file -DgroupId=com.cloudera -DartifactId=flume -Dversion=$FLUME_HOME/build/0.9.1-dev -Dclassifier=core -Dfile=flume-0.9.1-dev-core.jar -Dpackaging=jar
 
 
     1.2 Build elasticflume
 
     mvn package
 
-2. Ensure your Flume installation has a copy of the elasticSearch jars. The below will work, a dirty hack though it may be:
+2. Now add the elasticflume jar into the classpath too:
 
-    ln -s $ELASTICSEARCH_HOME/lib/*.jar $FLUME_HOME/lib
-
-3. Now add the elasticflume jar into the classpath too:
-
-    ln -s target/elasticflume*.jar $FLUME_HOME/lib/
+    ln -s $ELASTICFLUME_HOME/target/elasticflume-1.0.0-SNAPSHOT-jar-with-dependencies.jar $FLUME_HOME/lib/
 
 4. Startup Flume Master, and Flume nodes.
+    cd $FLUME_HOME
+    bin/flume master
+    bin/flume node -n elasticflumenode
+
+5. Use the Flume scripts to add a elasticflume node
     TODO
 
-5. Use the Flume web console to add an ElasticSearchSink
+6. Setup a basic console based source so you can type in data manually and have it indexed (pretending to be a log message)
     TODO
