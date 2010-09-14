@@ -39,10 +39,67 @@ Getting Started with elasticflume
 4. Startup Flume Master, and Flume nodes, you will need 2 different shells here.
     cd $FLUME_HOME
     bin/flume master
-    bin/flume node -n elasticflumenode
+    bin/flume node_nowatch
 
-5. Use the Flume scripts to add a elasticflume node
-    TODO
 
-6. Setup a basic console based source so you can type in data manually and have it indexed (pretending to be a log message)
-    TODO
+5. Setup a basic console based source so you can type in data manually and have it indexed (pretending to be a log message)
+    cd $FLUME_HOME
+    bin/flume shell -c localhost -e "exec config localhost 'console' 'elasticSearchSink'"
+
+    NOTE: For some reason my local testing Flume installaton used a default node name of my IP address, and not
+        'localhost' which it is often.  If things are not working properly, you should check by:
+
+        bin/flume shell -c localhost -e "getnodestatus"
+
+       If you see a node listed using an IP address, then you may need to then map that to localhost inside flume with
+       a logical name by doing this:
+
+       bin/flume shell -c localhost -e "map <IP ADDRESS> localhost"
+
+
+6. NOW FOR THE TEST! :)  In the console window you started the "node_nowatch" above,
+   type (and yes, straight after all those log messages, just start typing, trust me..):
+
+    hello world
+    hello there good sir
+
+    (ie. that is, type the 2 lines ensuring you press return after each)
+
+7. Verify you can search for your "Hello World" log, in another console, use curl to search your local elasticsearch node:
+
+    curl -XGET 'http://localhost:9200/flume/_search?pretty=true' -d '
+    {
+        "query" : {
+            "term" : { "message" : "hello" }
+        }
+    }
+    '
+
+    You should get a pretty printed JSON formatted search results, something like:
+
+
+  {
+  "_shards" : {
+    "total" : 5,
+    "successful" : 5,
+    "failed" : 0
+  },
+  "hits" : {
+    "total" : 2,
+    "max_score" : 1.1976817,
+    "hits" : [ {
+      "_index" : "flume",
+      "_type" : "LOG",
+      "_id" : "4e5a6f5b-1dd3-4bb6-9fd9-c8d785f39680",
+      "_score" : 1.1976817, "_source" : {"message":"hello world","timestamp":"2010-09-14T03:19:36.857Z","host":"192.168.1.170","priority":"INFO"}
+    }, {
+      "_index" : "flume",
+      "_type" : "LOG",
+      "_id" : "c77c18cc-af40-4362-b20b-193e5a3f6ff5",
+      "_score" : 0.8465736, "_source" : {"message":"hello there good sir","timestamp":"2010-09-14T03:28:04.168Z","host":"192.168.1.170","priority":"INFO"}
+    } ]
+  }
+  }
+
+
+8. Go to the ElasticSearch website and learn all about the REST and other APIs for searching an ElasticSearch index.
